@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Мои курсы — Цветочка</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      background: #f0ece4;
+      color: #111827;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr 330px;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: linear-gradient(180deg, #002e24 0%, #001d17 100%);
+      color: #fff;
+      padding: 28px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .logo {
+      font-size: 32px;
+      font-weight: 800;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+    .logo span { color: #6ee78f; }
+    .subtitle {
+      color: #b6cbc3;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 34px;
+    }
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .nav-item {
+      padding: 13px 16px;
+      border-radius: 14px;
+      color: #cfe0da;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.18s;
+    }
+    .nav-item.active,
+    .nav-item:hover {
+      background: rgba(255,255,255,0.11);
+      color: #fff;
+    }
+    .invite-box, .support-box {
+      background: rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 18px;
+      margin-top: 24px;
+    }
+    .invite-box p, .support-box p {
+      color: #cfe0da;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 14px;
+    }
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 18px;
+      background: #11a85b;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.18s;
+    }
+    .btn:hover { background: #0d9152; }
+
+    /* ── MAIN ── */
+    .main {
+      padding: 28px 36px;
+      overflow-y: auto;
+    }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .hello h1 { font-size: 28px; margin-bottom: 6px; }
+    .hello p { color: #6b7280; font-size: 15px; }
+    .icons { display: flex; gap: 18px; font-size: 22px; cursor: pointer; }
+
+    /* ── TRAIL MAP ── */
+    .trail-hero {
+      background: linear-gradient(135deg, #001d17 0%, #0a4a32 45%, #145e3e 100%);
+      border-radius: 28px;
+      padding: 36px 40px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+      min-height: 200px;
+    }
+    .trail-hero::before {
+      content: "🏔";
+      position: absolute;
+      right: 40px;
+      bottom: -10px;
+      font-size: 160px;
+      opacity: 0.12;
+      line-height: 1;
+    }
+    .trail-hero-label {
+      color: #6ee78f;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .trail-hero h2 {
+      color: #fff;
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+    .trail-hero p {
+      color: #b6cbc3;
+      font-size: 15px;
+      margin-bottom: 28px;
+    }
+    .trail-stats {
+      display: flex;
+      gap: 36px;
+    }
+    .trail-stat {
+      text-align: center;
+    }
+    .trail-stat strong {
+      display: block;
+      color: #6ee78f;
+      font-size: 26px;
+      font-weight: 800;
+    }
+    .trail-stat small {
+      color: #b6cbc3;
+      font-size: 13px;
+    }
+
+    /* Waypoints trail visual */
+    .waypoints {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-top: 26px;
+      position: relative;
+    }
+    .waypoint {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+    .waypoint-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 800;
+      border: 3px solid transparent;
+      position: relative;
+      z-index: 2;
+    }
+    .waypoint-dot.done {
+      background: #6ee78f;
+      color: #002e24;
+      border-color: #6ee78f;
+    }
+    .waypoint-dot.active {
+      background: #fff;
+      color: #002e24;
+      border-color: #fff;
+      box-shadow: 0 0 0 5px rgba(255,255,255,0.15);
+    }
+    .waypoint-dot.locked {
+      background: rgba(255,255,255,0.1);
+      color: #6b7280;
+      border-color: rgba(255,255,255,0.15);
+    }
+    .waypoint-label {
+      color: #b6cbc3;
+      font-size: 11px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .waypoint-label.active-label { color: #fff; font-weight: 700; }
+    .trail-line {
+      flex: 1;
+      height: 3px;
+      background: rgba(255,255,255,0.12);
+      position: relative;
+      top: -14px;
+      margin: 0 -4px;
+    }
+    .trail-line.done { background: #6ee78f; }
+
+    /* ── FILTER TABS ── */
+    .filter-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-tab {
+      padding: 9px 18px;
+      border-radius: 30px;
+      background: #fff;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.18s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .filter-tab.active {
+      background: #002e24;
+      color: #6ee78f;
+      border-color: #002e24;
+    }
+    .filter-tab:hover:not(.active) {
+      border-color: #002e24;
+    }
+    .filter-spacer { flex: 1; }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 12px;
+      padding: 9px 16px;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    /* ── SECTION ── */
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #002e24;
+      color: #6ee78f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .section-count {
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    /* ── COURSE CARDS ── */
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+    .course-card {
+      background: #fff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.07);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+    }
+    .course-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+      border-color: #6ee78f;
+    }
+    .course-thumb {
+      height: 140px;
+      display: flex;
+      align-items: flex-end;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .course-thumb .thumb-emoji {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-60%);
+      font-size: 64px;
+      opacity: 0.4;
+    }
+    .course-thumb .badge {
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
+    .thumb-forest  { background: linear-gradient(135deg, #001a12 0%, #0a4a32 60%, #1a6b48 100%); }
+    .thumb-purple  { background: linear-gradient(135deg, #2d1b69 0%, #6d4aff 70%, #a78bfa 100%); }
+    .thumb-amber   { background: linear-gradient(135deg, #7c2d12 0%, #e48a2a 70%, #fbbf24 100%); }
+    .thumb-teal    { background: linear-gradient(135deg, #0f4c5c 0%, #0e7490 70%, #22d3ee 100%); }
+    .thumb-rose    { background: linear-gradient(135deg, #7f1d4a 0%, #be185d 70%, #f43f8f 100%); }
+    .thumb-dark    { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 70%, #0f3460 100%); }
+
+    .course-body { padding: 18px; }
+    .course-body h4 {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+    .course-desc {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 14px;
+    }
+    .course-meta {
+      display: flex;
+      justify-content: space-between;
+      color: #9ca3af;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .mini-bar {
+      height: 5px;
+      background: #e5e7eb;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .mini-bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #11a85b, #6ee78f);
+      border-radius: 20px;
+    }
+    .course-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+    .status-badge.in-progress {
+      background: #dff6e8;
+      color: #078344;
+    }
+    .status-badge.not-started {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+    .status-badge.done {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    .continue-btn {
+      font-size: 13px;
+      font-weight: 700;
+      color: #11a85b;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Skills row */
+    .skills-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .skill-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 16px 10px;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.18s;
+    }
+    .skill-card:hover { transform: translateY(-3px); }
+    .skill-icon { font-size: 30px; margin-bottom: 8px; }
+    .skill-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .skill-card p { font-size: 11px; color: #6b7280; }
+    .skill-bar {
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 20px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .skill-bar span {
+      display: block;
+      height: 100%;
+      background: #11a85b;
+      border-radius: 20px;
+    }
+
+    /* Completed section */
+    .completed-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .completed-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.18s;
+    }
+    .completed-card:hover { transform: translateY(-2px); }
+    .completed-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .completed-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .completed-card p { font-size: 13px; color: #6b7280; }
+    .cert-badge {
+      margin-left: auto;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    /* RIGHT PANEL */
+    .rightbar {
+      background: #fbfaf7;
+      border-left: 1px solid #eee7dd;
+      padding: 26px 22px;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f0c9a4, #7a4d35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 20px;
+    }
+    .profile h3 { font-size: 16px; margin-bottom: 4px; }
+    .profile p { color: #6b7280; font-size: 13px; }
+    .side-card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+    .side-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+    .circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: conic-gradient(#13a760 0 68%, #e5e7eb 68% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      position: relative;
+    }
+    .circle::after {
+      content: "";
+      width: 72px;
+      height: 72px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+    }
+    .circle span {
+      position: relative;
+      z-index: 2;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .stat {
+      border-top: 1px solid #e5e7eb;
+      padding-top: 10px;
+    }
+    .stat strong { font-size: 20px; display: block; }
+    .stat small { color: #6b7280; font-size: 12px; }
+
+    /* Achievement list */
+    .achievements {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .achievement {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ach-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #dff6e8, #b7f0cc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .ach-icon.locked {
+      background: #f3f4f6;
+      opacity: 0.6;
+    }
+    .achievement h5 { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .achievement p { font-size: 12px; color: #6b7280; }
+
+    /* Next lesson */
+    .next-lesson {
+      background: linear-gradient(135deg, #002e24, #0a4a32);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 18px;
+      color: #fff;
+    }
+    .next-lesson-label {
+      color: #6ee78f;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .next-lesson h4 { font-size: 15px; margin-bottom: 6px; }
+    .next-lesson p { color: #b6cbc3; font-size: 13px; margin-bottom: 14px; }
+    .next-lesson button {
+      background: #6ee78f;
+      color: #001d17;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* ══════════════════════════════════
+       MODAL
+    ══════════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 28px;
+      width: 100%;
+      max-width: 720px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+      animation: slideUp 0.28s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(24px); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
+    }
+    .modal-header {
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal-header .close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: background 0.18s;
+    }
+    .modal-header .close-btn:hover { background: rgba(0,0,0,0.55); }
+    .modal-badge {
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .modal-header h2 { color: #fff; font-size: 22px; }
+    .modal-body { padding: 24px 28px; }
+    .modal-meta {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .meta-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f3f4f6;
+      border-radius: 10px;
+      padding: 7px 12px;
+      font-size: 13px;
+      color: #374151;
+    }
+    .modal-desc {
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+    .modal-progress-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .modal-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .modal-bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #11a85b, #6ee78f);
+      border-radius: 20px;
+    }
+    .lessons-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lessons-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f9fafb;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.18s;
+      border: 2px solid transparent;
+    }
+    .lesson-item:hover {
+      background: #f0fdf4;
+      border-color: #6ee78f;
+      transform: translateX(4px);
+    }
+    .lesson-item.done-lesson { background: #f0fdf4; }
+    .lesson-item.active-lesson {
+      background: #f0fdf4;
+      border-color: #11a85b;
+    }
+    .lesson-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      color: #6b7280;
+    }
+    .lesson-num.done { background: #11a85b; color: #fff; }
+    .lesson-num.active { background: #002e24; color: #6ee78f; }
+    .lesson-info { flex: 1; }
+    .lesson-info h5 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .lesson-info p { font-size: 12px; color: #9ca3af; }
+    .lesson-dur {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    .lesson-status { font-size: 18px; }
+    .modal-footer {
+      padding: 0 28px 28px;
+    }
+    .start-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #11a85b, #0d8b4a);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.18s;
+    }
+    .start-btn:hover { opacity: 0.9; }
+
+    /* Responsive */
+    @media (max-width: 1300px) {
+      .app { grid-template-columns: 220px 1fr; }
+      .rightbar { display: none; }
+      .courses-grid { grid-template-columns: repeat(2, 1fr); }
+      .skills-row { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 850px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .courses-grid { grid-template-columns: 1fr; }
+      .completed-grid { grid-template-columns: 1fr; }
+      .skills-row { grid-template-columns: repeat(3, 1fr); }
+      .main { padding: 22px; }
+      .trail-stats { gap: 18px; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div>
+      <div class="logo">Цветочка<span>●</span></div>
+      <div class="subtitle">Клуб цветочных<br/>предпринимателей</div>
+      <nav class="nav">
+        <a href="index.html"   class="nav-item">🏠 Главная</a>
+        <a href="courses.html" class="nav-item active">📚 Мои курсы</a>
+        <a href="#"            class="nav-item">📍 Карта развития</a>
+        <a href="#"            class="nav-item">⚙️ Навыки</a>
+        <a href="#"            class="nav-item">📖 Библиотека</a>
+        <a href="#"            class="nav-item">✅ Чек-листы</a>
+        <a href="#"            class="nav-item">📄 Шаблоны и регламенты</a>
+        <a href="#"            class="nav-item">👥 Сообщество</a>
+        <a href="#"            class="nav-item">🎥 Zoom-сессии</a>
+        <a href="#"            class="nav-item">💬 Чат клуба</a>
+        <a href="#"            class="nav-item">👤 Мой профиль</a>
+        <a href="#"            class="nav-item">⚙️ Настройки</a>
+      </nav>
+      <div class="invite-box">
+        <p>🎁 Пригласите коллегу и получите месяц клуба в подарок</p>
+        <button class="btn">Пригласить</button>
+      </div>
+    </div>
+    <div class="support-box">
+      <p>🎧 Нужна помощь?<br/>Напишите нам в поддержку</p>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+    <div class="topbar">
+      <div class="hello">
+        <h1>Мои курсы 🎒</h1>
+        <p>Ваш маршрут развития — шаг за шагом к вершине</p>
+      </div>
+      <div class="icons">🔍 🔔</div>
+    </div>
+
+    <!-- Trail Hero -->
+    <div class="trail-hero">
+      <div class="trail-hero-label">🧭 Маршрут обучения · Уровень 2</div>
+      <h2>Вы на подъёме — держите темп!</h2>
+      <p>28 пройденных модулей · 12 в процессе · 3 курса завершены</p>
+      <div class="trail-stats">
+        <div class="trail-stat">
+          <strong>68%</strong>
+          <small>Общий прогресс</small>
+        </div>
+        <div class="trail-stat">
+          <strong>43</strong>
+          <small>Часа обучения</small>
+        </div>
+        <div class="trail-stat">
+          <strong>3</strong>
+          <small>Сертификата</small>
+        </div>
+        <div class="trail-stat">
+          <strong>7</strong>
+          <small>Навыков</small>
+        </div>
+      </div>
+
+      <!-- Waypoints -->
+      <div class="waypoints" style="margin-top:28px;">
+        <div class="waypoint">
+          <div class="waypoint-dot done">⛺</div>
+          <div class="waypoint-label">Старт<br/>Уровень 1</div>
+        </div>
+        <div class="trail-line done"></div>
+        <div class="waypoint">
+          <div class="waypoint-dot done">✓</div>
+          <div class="waypoint-label">Первые<br/>продажи</div>
+        </div>
+        <div class="trail-line done"></div>
+        <div class="waypoint">
+          <div class="waypoint-dot active">🏕</div>
+          <div class="waypoint-label active-label">Вы здесь<br/>Уровень 2</div>
+        </div>
+        <div class="trail-line"></div>
+        <div class="waypoint">
+          <div class="waypoint-dot locked">🔒</div>
+          <div class="waypoint-label">Команда<br/>Уровень 3</div>
+        </div>
+        <div class="trail-line"></div>
+        <div class="waypoint">
+          <div class="waypoint-dot locked">🏔</div>
+          <div class="waypoint-label">Система<br/>Уровень 4</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-row">
+      <div class="filter-tab active" onclick="filterCourses('all', this)">Все курсы</div>
+      <div class="filter-tab" onclick="filterCourses('progress', this)">В процессе</div>
+      <div class="filter-tab" onclick="filterCourses('level', this)">Уровень 2</div>
+      <div class="filter-tab" onclick="filterCourses('skills', this)">Навыки</div>
+      <div class="filter-tab" onclick="filterCourses('done', this)">Завершённые</div>
+      <div class="filter-spacer"></div>
+      <div class="search-box">🔍 &nbsp;Поиск по курсам</div>
+    </div>
+
+    <!-- Active Courses -->
+    <div class="section-head">
+      <div class="section-icon">🔥</div>
+      <div class="section-title">В процессе</div>
+      <div class="section-count">· 4 курса</div>
+    </div>
+    <div class="courses-grid" id="active-courses">
+
+      <div class="course-card" onclick="openModal('team')">
+        <div class="course-thumb thumb-forest">
+          <div class="thumb-emoji">👥</div>
+          <span class="badge">Уровень 2 · Команда</span>
+        </div>
+        <div class="course-body">
+          <h4>Управление командой флористов</h4>
+          <div class="course-desc">Как нанимать, мотивировать и удерживать лучших флористов</div>
+          <div class="course-meta">
+            <span>Модуль 3 из 6</span>
+            <span>60%</span>
+          </div>
+          <div class="mini-bar"><span style="width:60%"></span></div>
+          <div class="course-footer">
+            <span class="status-badge in-progress">В процессе</span>
+            <span class="continue-btn">▶ Продолжить</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card" onclick="openModal('marketing')">
+        <div class="course-thumb thumb-purple">
+          <div class="thumb-emoji">📣</div>
+          <span class="badge">Навык · Маркетинг</span>
+        </div>
+        <div class="course-body">
+          <h4>Контент и продвижение в соцсетях</h4>
+          <div class="course-desc">Instagram, VK, Telegram — системный подход к контенту</div>
+          <div class="course-meta">
+            <span>Модуль 2 из 5</span>
+            <span>40%</span>
+          </div>
+          <div class="mini-bar"><span style="width:40%"></span></div>
+          <div class="course-footer">
+            <span class="status-badge in-progress">В процессе</span>
+            <span class="continue-btn">▶ Продолжить</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card" onclick="openModal('finance')">
+        <div class="course-thumb thumb-amber">
+          <div class="thumb-emoji">₽</div>
+          <span class="badge">Навык · Финансы</span>
+        </div>
+        <div class="course-body">
+          <h4>Финансовая модель цветочного бизнеса</h4>
+          <div class="course-desc">Юнит-экономика, маржинальность, точка безубыточности</div>
+          <div class="course-meta">
+            <span>Модуль 1 из 7</span>
+            <span>20%</span>
+          </div>
+          <div class="mini-bar"><span style="width:20%"></span></div>
+          <div class="course-footer">
+            <span class="status-badge in-progress">В процессе</span>
+            <span class="continue-btn">▶ Продолжить</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card" onclick="openModal('service')">
+        <div class="course-thumb thumb-teal">
+          <div class="thumb-emoji">⭐</div>
+          <span class="badge">Уровень 2 · Сервис</span>
+        </div>
+        <div class="course-body">
+          <h4>Стандарты сервиса и качества</h4>
+          <div class="course-desc">Создание WOW-опыта для каждого клиента магазина</div>
+          <div class="course-meta">
+            <span>Модуль 4 из 5</span>
+            <span>80%</span>
+          </div>
+          <div class="mini-bar"><span style="width:80%"></span></div>
+          <div class="course-footer">
+            <span class="status-badge in-progress">В процессе</span>
+            <span class="continue-btn">▶ Продолжить</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card" onclick="openModal('sales')">
+        <div class="course-thumb thumb-rose">
+          <div class="thumb-emoji">🤝</div>
+          <span class="badge">Навык · Продажи</span>
+        </div>
+        <div class="course-body">
+          <h4>Скрипты продаж для флористов</h4>
+          <div class="course-desc">Как увеличить средний чек и снизить отказы</div>
+          <div class="course-meta">
+            <span>Не начат</span>
+            <span>0%</span>
+          </div>
+          <div class="mini-bar"><span style="width:0%"></span></div>
+          <div class="course-footer">
+            <span class="status-badge not-started">Не начат</span>
+            <span class="continue-btn">→ Начать</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-card" onclick="openModal('ai')">
+        <div class="course-thumb thumb-dark">
+          <div class="thumb-emoji">🤖</div>
+          <span class="badge">Навык · AI</span>
+        </div>
+        <div class="course-body">
+          <h4>AI-инструменты для цветочного бизнеса</h4>
+          <div class="course-desc">ChatGPT, Midjourney и другие инструменты в работе</div>
+          <div class="course-meta">
+            <span>Не начат</span>
+            <span>0%</span>
+          </div>
+          <div class="mini-bar"><span style="width:0%"></span></div>
+          <div class="course-footer">
+            <span class="status-badge not-started">Не начат</span>
+            <span class="continue-btn">→ Начать</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Skills -->
+    <div class="section-head">
+      <div class="section-icon">⚙️</div>
+      <div class="section-title">Ваши навыки</div>
+    </div>
+    <div class="skills-row" style="margin-bottom:36px;">
+      <div class="skill-card">
+        <div class="skill-icon">₽</div>
+        <h4>Финансы</h4>
+        <p>5 / 12 мод.</p>
+        <div class="skill-bar"><span style="width:42%"></span></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📣</div>
+        <h4>Маркетинг</h4>
+        <p>4 / 14 мод.</p>
+        <div class="skill-bar"><span style="width:29%"></span></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🤝</div>
+        <h4>Продажи</h4>
+        <p>3 / 10 мод.</p>
+        <div class="skill-bar"><span style="width:30%"></span></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🌼</div>
+        <h4>Продукт</h4>
+        <p>4 / 9 мод.</p>
+        <div class="skill-bar"><span style="width:44%"></span></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">👥</div>
+        <h4>Команда</h4>
+        <p>6 / 13 мод.</p>
+        <div class="skill-bar"><span style="width:46%"></span></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">⚙️</div>
+        <h4>Система</h4>
+        <p>3 / 11 мод.</p>
+        <div class="skill-bar"><span style="width:27%"></span></div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🤖</div>
+        <h4>AI</h4>
+        <p>2 / 8 мод.</p>
+        <div class="skill-bar"><span style="width:25%"></span></div>
+      </div>
+    </div>
+
+    <!-- Completed -->
+    <div class="section-head">
+      <div class="section-icon">🏆</div>
+      <div class="section-title">Пройдено</div>
+      <div class="section-count">· 3 курса</div>
+    </div>
+    <div class="completed-grid">
+      <div class="completed-card">
+        <div class="completed-icon" style="background:linear-gradient(135deg,#dff6e8,#b7f0cc)">🌱</div>
+        <div>
+          <h4>Старт цветочного бизнеса</h4>
+          <p>Уровень 1 · 8 модулей · 12 часов</p>
+        </div>
+        <div class="cert-badge">🎓</div>
+      </div>
+      <div class="completed-card">
+        <div class="completed-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">📦</div>
+        <div>
+          <h4>Закупки и работа с поставщиками</h4>
+          <p>Уровень 1 · 6 модулей · 9 часов</p>
+        </div>
+        <div class="cert-badge">🎓</div>
+      </div>
+      <div class="completed-card">
+        <div class="completed-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8)">💐</div>
+        <div>
+          <h4>Основы флористики и ассортимент</h4>
+          <p>Уровень 1 · 5 модулей · 7 часов</p>
+        </div>
+        <div class="cert-badge">🎓</div>
+      </div>
+      <div class="completed-card" style="background:#f9fafb; border: 2px dashed #d1d5db; box-shadow:none;">
+        <div class="completed-icon" style="background:#f3f4f6; opacity:0.5">🔒</div>
+        <div style="opacity:0.5">
+          <h4>Финансовая грамотность</h4>
+          <p>Доступно после Уровня 2</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── RIGHT PANEL ── -->
+  <aside class="rightbar">
+    <div class="profile">
+      <div class="avatar">А</div>
+      <div>
+        <h3>Анна Иванова</h3>
+        <p>Цветочная студия "Bloom"</p>
+      </div>
+    </div>
+
+    <!-- Next lesson -->
+    <div class="next-lesson">
+      <div class="next-lesson-label">▶ Следующий урок</div>
+      <h4>Урок 4: KPI для флориста</h4>
+      <p>Курс «Управление командой» · 22 мин</p>
+      <button onclick="openModal('team')">Продолжить урок</button>
+    </div>
+
+    <div class="side-card">
+      <h3>Мой прогресс</h3>
+      <div class="circle"><span>68%</span></div>
+      <div class="stats">
+        <div class="stat">
+          <strong>28</strong>
+          <small>Пройдено модулей</small>
+        </div>
+        <div class="stat">
+          <strong>12</strong>
+          <small>В процессе</small>
+        </div>
+        <div class="stat">
+          <strong>43ч</strong>
+          <small>Обучения</small>
+        </div>
+        <div class="stat">
+          <strong>3</strong>
+          <small>Сертификата</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-card">
+      <h3>Достижения</h3>
+      <div class="achievements">
+        <div class="achievement">
+          <div class="ach-icon">🌱</div>
+          <div>
+            <h5>Первые шаги</h5>
+            <p>Прошли первый курс</p>
+          </div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon">🔥</div>
+          <div>
+            <h5>На подъёме</h5>
+            <p>7 дней подряд</p>
+          </div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon">⭐</div>
+          <div>
+            <h5>Отличник</h5>
+            <p>5 тестов на 100%</p>
+          </div>
+        </div>
+        <div class="achievement">
+          <div class="ach-icon locked">🏔</div>
+          <div style="opacity:0.5">
+            <h5>Покоритель вершин</h5>
+            <p>Достичь уровня 3</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL
+══════════════════════════════════ -->
+<div class="modal-overlay" id="modal" onclick="closeOnOverlay(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-header" id="modal-header">
+      <button class="close-btn" onclick="closeModal()">✕</button>
+      <div class="modal-badge" id="modal-badge"></div>
+      <h2 id="modal-title"></h2>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <div class="modal-progress-row">
+        <span>Прогресс курса</span>
+        <span id="modal-pct"></span>
+      </div>
+      <div class="modal-bar"><span id="modal-bar-fill"></span></div>
+      <div class="lessons-title">🗺 Уроки курса</div>
+      <div class="lessons-list" id="lessons-list"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="start-btn" id="modal-btn">▶ Продолжить обучение</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const courses = {
+    team: {
+      title: "Управление командой флористов",
+      badge: "Уровень 2 · Команда",
+      color: "thumb-forest",
+      desc: "Системный подход к найму, адаптации и мотивации флористов. Как выстроить команду, которая работает без вас и сохраняет высокое качество.",
+      meta: [
+        { icon:"⏱", text:"5,5 часов" },
+        { icon:"📦", text:"6 модулей" },
+        { icon:"📊", text:"Уровень 2" },
+        { icon:"🎓", text:"Сертификат" },
+      ],
+      pct: 60,
+      btn: "▶ Продолжить урок 4",
+      lessons: [
+        { num:1, title:"Портрет идеального флориста", dur:"18 мин", done:true },
+        { num:2, title:"Где и как искать сотрудников", dur:"24 мин", done:true },
+        { num:3, title:"Адаптация: первые 30 дней", dur:"31 мин", done:true },
+        { num:4, title:"KPI и система мотивации", dur:"22 мин", active:true },
+        { num:5, title:"Проведение планёрок", dur:"19 мин" },
+        { num:6, title:"Увольнение без стресса", dur:"26 мин" },
+      ]
+    },
+    marketing: {
+      title: "Контент и продвижение в соцсетях",
+      badge: "Навык · Маркетинг",
+      color: "thumb-purple",
+      desc: "Как вести Instagram и VK для цветочного магазина: контент-план, Reels, сторис и реклама без большого бюджета.",
+      meta: [
+        { icon:"⏱", text:"4 часа" },
+        { icon:"📦", text:"5 модулей" },
+        { icon:"📊", text:"Навык" },
+        { icon:"🎓", text:"Сертификат" },
+      ],
+      pct: 40,
+      btn: "▶ Продолжить урок 3",
+      lessons: [
+        { num:1, title:"Стратегия присутствия в соцсетях", dur:"20 мин", done:true },
+        { num:2, title:"Контент-план на месяц", dur:"27 мин", done:true },
+        { num:3, title:"Reels и короткие видео", dur:"35 мин", active:true },
+        { num:4, title:"Таргетированная реклама", dur:"40 мин" },
+        { num:5, title:"Аналитика и рост аудитории", dur:"22 мин" },
+      ]
+    },
+    finance: {
+      title: "Финансовая модель цветочного бизнеса",
+      badge: "Навык · Финансы",
+      color: "thumb-amber",
+      desc: "Юнит-экономика, маржинальность по позициям, точка безубыточности и P&L для цветочного магазина. Считаем вместе.",
+      meta: [
+        { icon:"⏱", text:"7 часов" },
+        { icon:"📦", text:"7 модулей" },
+        { icon:"📊", text:"Навык" },
+        { icon:"🎓", text:"Сертификат" },
+      ],
+      pct: 20,
+      btn: "▶ Продолжить урок 2",
+      lessons: [
+        { num:1, title:"Введение: зачем считать деньги", dur:"15 мин", done:true },
+        { num:2, title:"Юнит-экономика букета", dur:"38 мин", active:true },
+        { num:3, title:"Точка безубыточности", dur:"30 мин" },
+        { num:4, title:"P&L отчёт для флориста", dur:"42 мин" },
+        { num:5, title:"Управленческий учёт", dur:"35 мин" },
+        { num:6, title:"Ценообразование и наценка", dur:"28 мин" },
+        { num:7, title:"Финансовый план на год", dur:"50 мин" },
+      ]
+    },
+    service: {
+      title: "Стандарты сервиса и качества",
+      badge: "Уровень 2 · Сервис",
+      color: "thumb-teal",
+      desc: "Создание стандартов обслуживания, скриптов и чек-листов для магазина. Как сделать так, чтобы клиенты возвращались снова.",
+      meta: [
+        { icon:"⏱", text:"3,5 часа" },
+        { icon:"📦", text:"5 модулей" },
+        { icon:"📊", text:"Уровень 2" },
+        { icon:"🎓", text:"Сертификат" },
+      ],
+      pct: 80,
+      btn: "▶ Завершить курс",
+      lessons: [
+        { num:1, title:"Что такое сервис в цветочном", dur:"16 мин", done:true },
+        { num:2, title:"Точки контакта с клиентом", dur:"24 мин", done:true },
+        { num:3, title:"Книга стандартов магазина", dur:"32 мин", done:true },
+        { num:4, title:"Работа с жалобами и возвратами", dur:"28 мин", done:true },
+        { num:5, title:"Программа лояльности", dur:"20 мин", active:true },
+      ]
+    },
+    sales: {
+      title: "Скрипты продаж для флористов",
+      badge: "Навык · Продажи",
+      color: "thumb-rose",
+      desc: "Готовые скрипты для живых продаж, телефона и мессенджеров. Как поднять конверсию и средний чек без давления на клиента.",
+      meta: [
+        { icon:"⏱", text:"4,5 часа" },
+        { icon:"📦", text:"6 модулей" },
+        { icon:"📊", text:"Навык" },
+        { icon:"🎓", text:"Сертификат" },
+      ],
+      pct: 0,
+      btn: "→ Начать курс",
+      lessons: [
+        { num:1, title:"Психология покупателя цветов", dur:"22 мин" },
+        { num:2, title:"Скрипт для торгового зала", dur:"28 мин" },
+        { num:3, title:"Работа с возражениями", dur:"34 мин" },
+        { num:4, title:"Продажи через WhatsApp", dur:"26 мин" },
+        { num:5, title:"Повышение среднего чека", dur:"30 мин" },
+        { num:6, title:"Повторные продажи", dur:"20 мин" },
+      ]
+    },
+    ai: {
+      title: "AI-инструменты для цветочного бизнеса",
+      badge: "Навык · AI",
+      color: "thumb-dark",
+      desc: "ChatGPT для описаний, Midjourney для визуалов, автоматизация переписки и генерация контента для магазина.",
+      meta: [
+        { icon:"⏱", text:"3 часа" },
+        { icon:"📦", text:"8 модулей" },
+        { icon:"📊", text:"Навык" },
+        { icon:"🎓", text:"Сертификат" },
+      ],
+      pct: 0,
+      btn: "→ Начать курс",
+      lessons: [
+        { num:1, title:"Введение в AI-инструменты", dur:"15 мин" },
+        { num:2, title:"ChatGPT: промпты для флориста", dur:"25 мин" },
+        { num:3, title:"Описания букетов с AI", dur:"18 мин" },
+        { num:4, title:"Midjourney: визуалы для соцсетей", dur:"30 мин" },
+        { num:5, title:"AI-помощник в WhatsApp", dur:"22 мин" },
+        { num:6, title:"Автоответы и сценарии", dur:"20 мин" },
+        { num:7, title:"Генерация контент-плана", dur:"18 мин" },
+        { num:8, title:"AI в аналитике продаж", dur:"28 мин" },
+      ]
+    }
+  };
+
+  function openModal(key) {
+    const c = courses[key];
+    if (!c) return;
+
+    document.getElementById('modal-header').className = 'modal-header ' + c.color;
+    document.getElementById('modal-badge').textContent = c.badge;
+    document.getElementById('modal-title').textContent = c.title;
+    document.getElementById('modal-desc').textContent = c.desc;
+    document.getElementById('modal-pct').textContent = c.pct + '%';
+    document.getElementById('modal-bar-fill').style.width = c.pct + '%';
+    document.getElementById('modal-btn').textContent = c.btn;
+
+    // Meta chips
+    const metaEl = document.getElementById('modal-meta');
+    metaEl.innerHTML = c.meta.map(m =>
+      `<div class="meta-chip">${m.icon} ${m.text}</div>`
+    ).join('');
+
+    // Lessons
+    const listEl = document.getElementById('lessons-list');
+    listEl.innerHTML = c.lessons.map(l => {
+      let cls = 'lesson-item';
+      let numCls = 'lesson-num';
+      let statusIcon = '○';
+      if (l.done)   { cls += ' done-lesson';   numCls += ' done';   statusIcon = '✓'; }
+      if (l.active) { cls += ' active-lesson';  numCls += ' active'; statusIcon = '▶'; }
+      return `
+        <div class="${cls}">
+          <div class="${numCls}">${l.done ? '✓' : l.active ? '▶' : l.num}</div>
+          <div class="lesson-info">
+            <h5>${l.title}</h5>
+            <p>${l.dur}${l.done ? ' · Пройдено' : l.active ? ' · Текущий урок' : ''}</p>
+          </div>
+          <span class="lesson-status">${l.done ? '✅' : l.active ? '🎯' : '🔒'}</span>
+        </div>`;
+    }).join('');
+
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeOnOverlay(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+
+  function filterCourses(type, el) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    // Simple visual feedback — full filter logic would connect to backend
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+</script>
+</body>
+</html>
