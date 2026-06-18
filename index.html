@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Цветочка — платформа</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      background: #f7f4ee;
+      color: #111827;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr 330px;
+      min-height: 100vh;
+    }
+    /* SIDEBAR */
+    .sidebar {
+      background: linear-gradient(180deg, #002e24 0%, #001d17 100%);
+      color: #fff;
+      padding: 28px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 32px;
+      font-weight: 800;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+    .logo span {
+      color: #6ee78f;
+    }
+    .subtitle {
+      color: #b6cbc3;
+      font-size: 14px;
+      line-height: 1.4;
+      margin-bottom: 34px;
+    }
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .nav-item {
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: #cfe0da;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .nav-item.active,
+    .nav-item:hover {
+      background: rgba(255,255,255,0.11);
+      color: #fff;
+    }
+    .invite-box,
+    .support-box {
+      background: rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 18px;
+      margin-top: 24px;
+    }
+    .invite-box p,
+    .support-box p {
+      color: #cfe0da;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 14px;
+    }
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 18px;
+      background: #11a85b;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+    /* MAIN */
+    .main {
+      padding: 28px 34px;
+      overflow-y: auto;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .hello h1 {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+    .hello p {
+      color: #6b7280;
+      font-size: 15px;
+    }
+    .icons {
+      display: flex;
+      gap: 18px;
+      font-size: 22px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+    .level-card {
+      background: radial-gradient(circle at 80% 10%, #075f46 0%, #002e24 45%, #001b15 100%);
+      color: #fff;
+      border-radius: 24px;
+      padding: 28px;
+      min-height: 245px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+    }
+    .level-label {
+      color: #b7d9cc;
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+    .level-card h2 {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+    .revenue {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 44px;
+    }
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #d8eee5;
+    }
+    .progress {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.18);
+      border-radius: 30px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .progress span {
+      display: block;
+      width: 65%;
+      height: 100%;
+      background: #69df86;
+      border-radius: 30px;
+    }
+    .level-card small {
+      color: #d8eee5;
+      display: block;
+      margin-bottom: 22px;
+      line-height: 1.45;
+    }
+    .level-card button {
+      width: auto;
+      padding: 14px 28px;
+    }
+    .quote-card {
+      background: #f1eadf;
+      border-radius: 24px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 245px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.06);
+    }
+    .quote-text {
+      padding: 32px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .quote-text h3 {
+      font-size: 19px;
+      line-height: 1.35;
+      margin-bottom: 18px;
+    }
+    .quote-text p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .flowers {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 86px;
+      background: linear-gradient(135deg, #fff7ec, #eedec9);
+    }
+    .section-title {
+      font-size: 20px;
+      margin: 26px 0 16px;
+    }
+    .courses {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    .course-card {
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+    }
+    .course-img {
+      height: 120px;
+      background: linear-gradient(135deg, #295a43, #d6b28e);
+      display: flex;
+      align-items: flex-end;
+      padding: 12px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .course-img.purple {
+      background: linear-gradient(135deg, #6d4aff, #efe5ff);
+    }
+    .course-img.orange {
+      background: linear-gradient(135deg, #e48a2a, #f7e3c6);
+    }
+    .course-img.green {
+      background: linear-gradient(135deg, #0d5d44, #d8b079);
+    }
+    .course-body {
+      padding: 16px;
+    }
+    .course-body h4 {
+      font-size: 16px;
+      line-height: 1.35;
+      margin-bottom: 14px;
+      min-height: 42px;
+    }
+    .course-meta {
+      display: flex;
+      justify-content: space-between;
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .mini-progress {
+      height: 5px;
+      background: #e5e7eb;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .mini-progress span {
+      display: block;
+      height: 100%;
+      background: #12a85d;
+    }
+    .continue {
+      color: #0d9b55;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .skills {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 14px;
+    }
+    .skill-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px 12px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    .skill-icon {
+      font-size: 34px;
+      margin-bottom: 10px;
+    }
+    .skill-card h4 {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .skill-card p {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .recommend {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+    .rec-card {
+      background: #fff;
+      min-height: 120px;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .tag {
+      display: inline-block;
+      background: #dff6e8;
+      color: #078344;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 30px;
+      margin-bottom: 14px;
+    }
+    .rec-card h4 {
+      font-size: 15px;
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+    .rec-card p {
+      color: #6b7280;
+      font-size: 13px;
+    }
+    /* RIGHT PANEL */
+    .rightbar {
+      background: #fbfaf7;
+      border-left: 1px solid #eee7dd;
+      padding: 26px 22px;
+      overflow-y: auto;
+    }
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+    .avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f0c9a4, #7a4d35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 20px;
+    }
+    .profile h3 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .profile p {
+      color: #6b7280;
+      font-size: 13px;
+    }
+    .side-card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+    }
+    .side-card h3 {
+      font-size: 17px;
+      margin-bottom: 16px;
+    }
+    .circle {
+      width: 105px;
+      height: 105px;
+      border-radius: 50%;
+      background: conic-gradient(#13a760 0 68%, #e5e7eb 68% 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      position: relative;
+    }
+    .circle::after {
+      content: "";
+      width: 76px;
+      height: 76px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+    }
+    .circle span {
+      position: relative;
+      z-index: 2;
+      font-size: 22px;
+      font-weight: 800;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .stat {
+      border-top: 1px solid #e5e7eb;
+      padding-top: 12px;
+    }
+    .stat strong {
+      font-size: 22px;
+      display: block;
+    }
+    .stat small {
+      color: #6b7280;
+    }
+    .zoom p {
+      color: #374151;
+      font-size: 14px;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .checklist label {
+      font-size: 14px;
+      color: #374151;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .activity {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      font-size: 14px;
+      color: #374151;
+      line-height: 1.35;
+    }
+    .activity-icon {
+      width: 34px;
+      height: 34px;
+      background: #eef6ff;
+      color: #1d75d8;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    @media (max-width: 1300px) {
+      .app {
+        grid-template-columns: 220px 1fr;
+      }
+      .rightbar {
+        display: none;
+      }
+      .courses,
+      .recommend {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .skills {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    @media (max-width: 850px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        display: none;
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+      .courses,
+      .recommend,
+      .skills {
+        grid-template-columns: 1fr;
+      }
+      .main {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div>
+        <div class="logo">Цветочка<span>●</span></div>
+        <div class="subtitle">
+          Клуб цветочных<br />
+          предпринимателей
+        </div>
+        <nav class="nav">
+          <a href="index.html"   class="nav-item active" style="text-decoration:none;color:inherit;">🏠 Главная</a>
+          <a href="courses.html" class="nav-item" style="text-decoration:none;color:inherit;">📚 Мои курсы</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">📍 Карта развития</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">⚙️ Навыки</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">📖 Библиотека</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">✅ Чек-листы</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">📄 Шаблоны и регламенты</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">👥 Сообщество</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">🎥 Zoom-сессии</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">💬 Чат клуба</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">👤 Мой профиль</a>
+          <a href="#"            class="nav-item" style="text-decoration:none;color:inherit;">⚙️ Настройки</a>
+        </nav>
+        <div class="invite-box">
+          <p>🎁 Пригласите коллегу и получите месяц клуба в подарок</p>
+          <button class="btn">Пригласить</button>
+        </div>
+      </div>
+      <div class="support-box">
+        <p>🎧 Нужна помощь?<br />Напишите нам в поддержку</p>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="hello">
+          <h1>Привет, Анна! 🌸</h1>
+          <p>Добро пожаловать в «Цветочку» — точку роста вашего бизнеса</p>
+        </div>
+        <div class="icons">
+          🔍 🔔
+        </div>
+      </div>
+      <section class="hero-grid">
+        <div class="level-card">
+          <div class="level-label">Мой уровень бизнеса</div>
+          <h2>Уровень 2. Рост 🛡️</h2>
+          <div class="revenue">Выручка 3–10 млн ₽ / мес</div>
+          <div class="progress-row">
+            <span>До следующего уровня</span>
+            <span>65%</span>
+          </div>
+          <div class="progress">
+            <span></span>
+          </div>
+          <small>
+            Выполните ещё 4 модуля и достигните<br />
+            Уровня 3. Система
+          </small>
+          <button class="btn">Смотреть карту развития</button>
+        </div>
+        <div class="quote-card">
+          <div class="quote-text">
+            <h3>«Бизнес растет тогда,<br />когда растет его владелец»</h3>
+            <p>Илья Гайдуков</p>
+          </div>
+          <div class="flowers">💐</div>
+        </div>
+      </section>
+      <h2 class="section-title">Продолжить обучение</h2>
+      <section class="courses">
+        <div class="course-card" onclick="location.href='courses.html'" style="cursor:pointer;">
+          <div class="course-img">УРОВЕНЬ 2</div>
+          <div class="course-body">
+            <h4>Управление командой флористов</h4>
+            <div class="course-meta">
+              <span>Модуль 3 из 6</span>
+              <span>60%</span>
+            </div>
+            <div class="mini-progress"><span style="width:60%"></span></div>
+            <div class="continue">▶ Продолжить</div>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-img purple">НАВЫК: МАРКЕТИНГ</div>
+          <div class="course-body">
+            <h4>Контент и продвижение в соцсетях</h4>
+            <div class="course-meta">
+              <span>Модуль 2 из 5</span>
+              <span>40%</span>
+            </div>
+            <div class="mini-progress"><span style="width:40%"></span></div>
+            <div class="continue">▶ Продолжить</div>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-img orange">НАВЫК: ФИНАНСЫ</div>
+          <div class="course-body">
+            <h4>Финансовая модель цветочного бизнеса</h4>
+            <div class="course-meta">
+              <span>Модуль 1 из 7</span>
+              <span>20%</span>
+            </div>
+            <div class="mini-progress"><span style="width:20%"></span></div>
+            <div class="continue">▶ Продолжить</div>
+          </div>
+        </div>
+        <div class="course-card">
+          <div class="course-img green">УРОВЕНЬ 2</div>
+          <div class="course-body">
+            <h4>Стандарты сервиса и качества</h4>
+            <div class="course-meta">
+              <span>Модуль 4 из 5</span>
+              <span>80%</span>
+            </div>
+            <div class="mini-progress"><span style="width:80%"></span></div>
+            <div class="continue">▶ Продолжить</div>
+          </div>
+        </div>
+      </section>
+      <h2 class="section-title">Выберите навык для развития</h2>
+      <section class="skills">
+        <div class="skill-card">
+          <div class="skill-icon">₽</div>
+          <h4>Финансы</h4>
+          <p>5 из 12 модулей</p>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon">📣</div>
+          <h4>Маркетинг</h4>
+          <p>4 из 14 модулей</p>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon">🤝</div>
+          <h4>Продажи</h4>
+          <p>3 из 10 модулей</p>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon">🌼</div>
+          <h4>Продукт</h4>
+          <p>4 из 9 модулей</p>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon">👥</div>
+          <h4>Команда</h4>
+          <p>6 из 13 модулей</p>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon">⚙️</div>
+          <h4>Система</h4>
+          <p>3 из 11 модулей</p>
+        </div>
+        <div class="skill-card">
+          <div class="skill-icon">🤖</div>
+          <h4>AI</h4>
+          <p>2 из 8 модулей</p>
+        </div>
+      </section>
+      <h2 class="section-title">Рекомендовано для вас</h2>
+      <section class="recommend">
+        <div class="rec-card">
+          <span class="tag">НОВЫЙ МОДУЛЬ</span>
+          <h4>Как повысить средний чек без скидок</h4>
+          <p>Уровень 2</p>
+        </div>
+        <div class="rec-card">
+          <span class="tag">ПОПУЛЯРНОЕ</span>
+          <h4>Работа с постоянными клиентами</h4>
+          <p>Навык: продажи</p>
+        </div>
+        <div class="rec-card">
+          <span class="tag">ПРАКТИКУМ</span>
+          <h4>Разбор финансовых показателей</h4>
+          <p>Навык: финансы</p>
+        </div>
+        <div class="rec-card">
+          <span class="tag">ШАБЛОН</span>
+          <h4>Шаблон должностной инструкции флориста</h4>
+          <p>Навык: команда</p>
+        </div>
+      </section>
+    </main>
+    <aside class="rightbar">
+      <div class="profile">
+        <div class="avatar">А</div>
+        <div>
+          <h3>Анна Иванова</h3>
+          <p>Цветочная студия “Bloom”</p>
+        </div>
+      </div>
+      <div class="side-card">
+        <h3>Мой прогресс</h3>
+        <div class="circle">
+          <span>68%</span>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <strong>28</strong>
+            <small>Пройдено модулей</small>
+          </div>
+          <div class="stat">
+            <strong>12</strong>
+            <small>Модулей в процессе</small>
+          </div>
+        </div>
+        <button class="btn">Смотреть детально</button>
+      </div>
+      <div class="side-card zoom">
+        <h3>Ближайшая Zoom-сессия</h3>
+        <p>📅 18 мая, пн 19:00</p>
+        <p><strong>Разбор ваших бизнес-задач</strong></p>
+        <button class="btn">Записаться</button>
+      </div>
+      <div class="side-card">
+        <h3>Мой чек-лист на неделю</h3>
+        <div class="checklist">
+          <label><input type="checkbox" checked /> Проанализировать продажи</label>
+          <label><input type="checkbox" checked /> Провести планерку с командой</label>
+          <label><input type="checkbox" /> Настроить рекламу</label>
+          <label><input type="checkbox" /> Посмотреть урок</label>
+        </div>
+      </div>
+      <div class="side-card">
+        <h3>Активность в клубе</h3>
+        <div class="activity">
+          <div class="activity-item">
+            <div class="activity-icon">💬</div>
+            <div>Новый пост в чате клуба<br /><small>2 новых комментария</small></div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">👤</div>
+            <div>Дарья задала вопрос<br /><small>в чате клуба</small></div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">🎥</div>
+            <div>Открыта запись<br /><small>на Zoom-сессию</small></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>
+
+Это не финальная разработка, а точный HTML/CSS-прототип под визуал.
+Для реальной платформы дальше лучше переносить это в React / Next.js и подключать личный кабинет, курсы, прогресс, домашки и роли.
